@@ -1,27 +1,40 @@
-import { forwardRef, useImperativeHandle,useRef } from "react";
-export default function ResultModal({ref,result,targetTime}) {
-  const dialog = useRef() ;
+import { forwardRef, useImperativeHandle, useRef } from "react";
+
+const ResultModal = forwardRef(function ResultModal(
+  {  targetTime, remainingTime,onReset },
+  ref
+) {
+  const dialog = useRef();
+  const userLost = remainingTime <= 0;
+  const formattedRemainingTime =( remainingTime/1000).toFixed(2);
+
+  // This exposes methods to parent
   useImperativeHandle(ref, () => {
     return {
-      //When the open property is called this dialog showModal property will be called 
-      open(){
+      open() {
         dialog.current.showModal();
-      }
-    }
+      },
+    };
   });
+
   return (
-  <dialog ref = {dialog} className ="result-modal" open >
-    <h2>You {result}</h2>
-    <p>The target time was <strong>{targetTime} seconds.</strong></p>
-    <p>You Stopped the Timer with<strong>X seconds left</strong> </p>
+    <dialog ref={dialog} className="result-modal">
+      {userLost && <h2>You lost!</h2>}
 
-    {/* When user clicks Close:
-    ✔ The dialog closes automatically */}
-    <form method = "dialog">
-      <button>Close</button>
-    </form>
-  </dialog>
+      <p>
+        The target time was <strong>{targetTime} seconds.</strong>
+      </p>
+
+      <p>
+        You Stopped the Timer with{" "}
+        <strong>{formattedRemainingTime} seconds left</strong>
+      </p>
+
+      <form method="dialog" onSubmit ={onReset}>
+        <button>Close</button>
+      </form>
+    </dialog>
   );
-}
+});
 
-
+export default ResultModal;
