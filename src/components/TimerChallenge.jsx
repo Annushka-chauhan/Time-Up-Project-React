@@ -3,9 +3,11 @@
 
 
 import {useState, useRef} from 'react' ; 
-let timer ;
+import ResultModal from './ResultModal';
+//let timer ;
 export default function TimerChallenge({title, targetTime}) {
  const timer= useRef();
+ const dialog =useRef(); 
 const [timerStarted, setTimerStarted] = useState(false);  
 const [timerExpired, setTimerExpired] =useState(false);
 
@@ -20,6 +22,8 @@ function handleStart(){
   //Here whatever the target Time is after that the Time is expired thats why its set as true 
     timer.current=  setTimeout(()=> {
     setTimerExpired(true);
+    //Dialog element has a showModal() method which can be called to show it 
+    dialog.current.open();
   } ,targetTime*1000);
 }
 //Here we have to stop soething which is happening above in the handleStart thats what how to get access to this (ref helps us)
@@ -27,9 +31,11 @@ function handleStop(){
   //this clearTimeOut is used to clear the timer
    clearTimeout(timer.current);
 }
-  return (<section className = "challenge">
+  return (
+    <>
+    <ResultModal ref={dialog} targetTime = {targetTime} result= "lost"/>
+  <section className = "challenge">
    <h2>{title}</h2>
-   {timerExpired && <p>You Lost!</p>}
    <p className ="challenge-time">
    {targetTime} second{targetTime>1 ?'s' : ''}
    </p>
@@ -42,5 +48,6 @@ function handleStop(){
     {timerStarted ? 'Time is Running ....' : 'TimerInactive'}
    </p>
   </section>
+  </>
   );
 }
